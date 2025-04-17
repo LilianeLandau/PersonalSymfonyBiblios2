@@ -1,0 +1,12 @@
+twig:
+    file_name_pattern: '*.twig'
+    form_themes:
+        - 'bootstrap_5_layout.html.twig'
+
+    # Ajout de l'extension Pagerfanta
+    default_path: '%kernel.project_dir%/templates'  # Assurez-vous que cela est bien configuré
+
+# Si vous êtes en mode test, vous pouvez définir strict_variables à true pour les tests
+when@test:
+    twig:
+        strict_variables: true

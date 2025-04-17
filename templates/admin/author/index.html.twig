@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+{% block title %}Liste des Auteurs
+{% endblock %}
+
+{% block body %}
+	<section class="container px-4">
+		<h1>Liste des Auteurs</h1>
+		<ul class="list-group list-group-flush">
+			{% for author in authors %}
+				<div class="card mb-1">
+					<div class="card-body">
+						<div class="card-title d-flex justify-content-between">
+							<a href="{{ path('app_admin_author_show', {'id': author.id}) }}" class="stretched-link link-dark">
+								<h4 class="mb-1">{{ author.name }}</h4>
+							</a>
+							<smallclass="text-muted">identifiant
+								{{ author.id }}</small>
+						</div>
+					</div>
+				</div>
+			{% else %}
+				<li>Aucun enregistrement en base de données.</li>
+			{% endfor %}
+		</ul>
+
+		{# Section des auteurs vivants #}
+		<h2>Auteurs vivants</h2>
+		<ul class="list-group list-group-flush">
+			{% for livingAuthor in livingAuthors %}
+				<div class="card mb-1">
+					<div class="card-body">
+						<div class="card-title d-flex justify-content-between">
+							<a href="{{ path('app_admin_author_show', {'id': livingAuthor.id}) }}" class="stretched-link link-dark">
+								<h4>
+									{{ livingAuthor.name }}</h4>
+							</a>
+							<smallclass="text-muted">Né le
+								{{ livingAuthor.dateOfBirth|date('d M Y') }}</small>
+						</div>
+					</div>
+				</div>
+				{% else %}Aucun auteur vivant trouvé.</li>
+		{% endfor %}
+	</ul>
+
+
+	{# Section des auteurs morts #}
+	<h2>Auteurs morts</h2>
+	<ul class="list-group list-group-flush">
+		{% for deadAuthor in deadAuthors %}
+
+			<div class="card mb-1">
+				<div class="card-body">
+					<div class="card-title d-flex justify-content-between">
+						<a href="{{ path('app_admin_author_show', {'id': deadAuthor.id}) }}" class="stretched-link link-dark">
+							<h4>
+								{{ deadAuthor.name }}</h4>
+						</a>
+						<smallclass="text-muted">Mort le
+							{{ deadAuthor.dateOfDeath|date('d M Y') }}</small>
+					</div>
+				</div>
+			</div>
+		{% else %}
+			<li>Aucun auteur mort trouvé.</li>
+		{% endfor %}
+	</ul>
+
+	{# Affichage de la pagination #}
+	<div class="pagination">
+		{{ pagerfanta(authors, {
+        'prev_message': 'Précédent',
+        'next_message': 'Suivant'
+    }) }}
+	</div>
+
+
+</section>{% endblock %}

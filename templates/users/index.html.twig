@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Users
+{% endblock %}
+
+{% block body %}
+	<section class="container px-4 my-4">
+		<h1 class="mb-4 text-center">Liste des Users</h1>
+
+		{% for user in users %}
+			<div class="mb-4 p-3 border rounded">
+				<p>Identifiant:
+					{{ user.id }}
+				</p>
+				<p>Lastname:
+					{{ user.lastname }}</p>
+				<p>Firstname:
+					{{ user.firstname }}</p>
+				<p>Email:
+					{{ user.email }}</p>
+				<p>Rôle:{{ user.roles|join(', ') }}
+				</p>
+			</div>
+
+		{% endfor %}
+	</section>
+{% endblock %}

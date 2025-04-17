@@ -1,0 +1,14 @@
+/* public/css/styles.css */
+/*pagination */
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+}
+
+.pagination__item{
+    margin:  10px;
+}
+
+
