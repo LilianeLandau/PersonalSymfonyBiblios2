@@ -47,6 +47,9 @@ class Book
     #[ORM\ManyToOne(inversedBy: 'books')]
     private ?Editor $editor = null;
 
+    #[ORM\ManyToOne(inversedBy: 'books')]
+    private ?User $createdBy = null;
+
 
     public function __construct()
     {
@@ -177,6 +180,18 @@ class Book
     public function setEditor(?Editor $editor): static
     {
         $this->editor = $editor;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }
