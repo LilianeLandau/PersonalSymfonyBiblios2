@@ -13,9 +13,13 @@ class BookCreatorVoter extends Voter
     /**
      * @inheritDoc
      */
-
+    //CETTE METHODE  supports() PERMET DE FILTRER LES CAS OU LE VOTER DOIT VOTER OU S'ABSTENIR
+    //cette méthode reçoit l'attribut qui a été passé en premier argument à isGranted
+    //ainsi qu'un éventuel second argument
+    //elle renvoie true le voter doit voter et false s'il doit s'abstenir
     //la méthode supports retourne true si le voter doit voter et false si le voter doit s'abstenir
     //quand voter : si on a passé l'attribute book.is_creator et que le sujet est une instance de Book 
+
     protected function supports(string $attribute, mixed $subject): bool
     {
         return 'book.is_creator' === $attribute && $subject instanceof Book;
@@ -24,6 +28,11 @@ class BookCreatorVoter extends Voter
     /**
      * @inheritDoc
      */
+
+    //CETTE METHODE voteOnAttribute() PREND LA DECISION D'AUTORISER OU NON L'ACCES    
+    //cette méthode reçoit l'attribut, le sujet éventuel ainsi que l'objet TokenInterface
+    //qui contient l'utilisateur connecté
+    //elle renvoie true si l'utilisateur connecté est le créateur du livre et false sinon
     //la logique de vérification
     //il faut récupérer l'instance de l'utilisateur connecté pour vérifier si c'est lui qui a créé le livre
     //cet utilisateur se trouve dans $token
