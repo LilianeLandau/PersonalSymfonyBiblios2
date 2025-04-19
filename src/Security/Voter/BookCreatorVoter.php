@@ -1,12 +1,19 @@
 <?php
-
+//déclaration du namespace pour organiser le code
 namespace App\Security\Voter;
 
+//importer les classes nécessaires
+//l'entité Book qui sera vérifiée
 use App\Entity\Book;
+//l'entité User pour l'utilisateur connecté
 use App\Entity\User;
+///contient les informations d'authentification de l'utilisateur
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+//classe de base pour les Voters
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
+
+//voter personnalisé, étend la classe Voter de Symfony
 class BookCreatorVoter extends Voter
 {
 
@@ -20,10 +27,20 @@ class BookCreatorVoter extends Voter
     //la méthode supports retourne true si le voter doit voter et false si le voter doit s'abstenir
     //quand voter : si on a passé l'attribute book.is_creator et que le sujet est une instance de Book 
 
+    // Ce Voter ne doit intervenir que si :
+    // 1. L'attribut est exactement 'book.is_creator'
+    // 2. Le sujet est une instance de Book
+
     protected function supports(string $attribute, mixed $subject): bool
     {
         return 'book.is_creator' === $attribute && $subject instanceof Book;
     }
+
+    //cette annotation PHPDoc sert à indiquer explicitment
+    //que la méthode hérite de la documentation de la classe parente
+    //en effet, classe BookCeratorVoter étend la classe Voter de SYmfony
+    //l'annotation @inheritDoc permet de dire que cette méthode supports()
+    //est identique à la méthode de la classe parente Voter::supports()
 
     /**
      * @inheritDoc
@@ -44,18 +61,30 @@ class BookCreatorVoter extends Voter
         //dans ce cas getUser() retourne null
         //donc si mon $user n'est pas une instance de User
         //on retourne false
+
+        // Récupération de l'utilisateur à partir du token
+        // Note: getUser() peut retourner null si l'utilisateur n'est pas connecté
         $user = $token->getUser();
+        // Si l'utilisateur n'est pas une instance de User (soit null, soit autre chose)
+        // On refuse immédiatement l'accès
         if (!$user instanceof User) {
             return false;
         }
 
         //dans les autres cas on utilise cette notation pour indique à l'éditeur de code 
         //que $subject est bien une instance de Book
-        //on reoturne la vérification qui dit que le $user 
+        //on retourne la vérification qui dit que le $user 
         //doit être le même que celui de $subject->getCreatedBy()
+        //il s'agit d'une notation PHPDoc  
 
+        // Ici, on sait que $subject est un Book (grâce à la méthode supports())
+        // On utilise une annotation de type pour aider l'IDE/éditeur de code     
 
         /** @var Book $subject */
+
+        // La logique de décision :
+        // On autorise l'accès seulement si l'utilisateur connecté ($user)
+        // est le même que le créateur du livre ($subject->getCreatedBy())
         return $user === $subject->getCreatedBy();
     }
 }

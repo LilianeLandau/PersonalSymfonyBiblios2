@@ -1,6 +1,21 @@
 {% extends 'base.html.twig' %}
 
 
+{# 
+  Définit une variable Twig 'action' qui prendra la valeur :
+  - 'Ajout' si la route actuelle est 'app_admin_book_new'
+  - 'Édition' dans tous les autres cas
+
+set action=... crée une variable Twig nommée action
+la notation app.current_route : 
+*app est une variable globale de Twig 
+*current_road est une propriété qui contient le nom de la route actuelle 
+ici on compare la route actuelle à 'app_admin_book_new'
+  Si la condition est vraie, action sera 'Ajout', sinon elle sera 'Édition'.
+  Cette variable est ensuite utilisée dans le bloc title pour afficher le titre de la page.
+  La variable action est utilisée pour afficher le titre de la page
+#}
+
 {% set action = app.current_route == 'app_admin_book_new' ? 'Ajout' : 'Édition' %}
 
 {% block title %}
@@ -13,9 +28,15 @@
 
 
 	<div class="w-50 m-auto">
-		<h1>Ajouter un Livre</h1>
+		<h1>
+			Action
+			{{ action }}
+			* d'un Livre</h1>
 		{{ form_start(form) }}
 		{{ form_widget(form) }}
-		<button type="submit" class="btn btn-primary">Ajouter un Livre</button>
+		<button type="submit" class="btn btn-primary">
+			Action
+			{{ action }}
+			* d'un Livre</button>
 		{{ form_end(form) }}</div>
 {% endblock %}

@@ -10,11 +10,17 @@ use App\Entity\Author;
 use App\Repository\AuthorRepository;
 use App\Form\BookType;
 use Doctrine\ORM\EntityManagerInterface;
+//adaptateur de requête pour la pagination
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
+//classe principale de la pagination
 use Pagerfanta\Pagerfanta;
+//contrôleur de base de Symfony
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+//class pour gérer les requêtes HTTP
 use Symfony\Component\HttpFoundation\Request;
+//class pour gérer les réponses HTTP
 use Symfony\Component\HttpFoundation\Response;
+//attribut pour définir les routes
 use Symfony\Component\Routing\Attribute\Route;
 //ajouter  la classe isGranted pour la sécurité
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -22,20 +28,23 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 //ce controller gère les actions d'administration liées aux livres
 #[Route('/admin/book')]
+
+//définition du contrôleur final, ne peut pas être étendu
 final class BookController extends AbstractController
 {
     //affiche la liste des livres paginée
     #[Route('', name: 'app_admin_book_index', methods: ['GET'])]
     public function index(Request $request, BookRepository $bookRepository): Response
     {
+        //créé un constructeur de requête pour les livres, triés par titre
         $queryBuilder = $bookRepository->createQueryBuilder('b')
             ->orderBy('b.title', 'ASC');
-
+        //configurer la pagination avec Pagerfanta
         $adapter = new QueryAdapter($queryBuilder);
         $pagerfanta = new Pagerfanta($adapter);
         $pagerfanta->setMaxPerPage(6);
         $pagerfanta->setCurrentPage($request->query->getInt('page', 1));
-
+        //rend la vue des livres avec la pagination
         return $this->render('admin/book/index.html.twig', [
             'controller_name' => 'BookController',
             'books' => $pagerfanta,
@@ -64,6 +73,9 @@ final class BookController extends AbstractController
 
         //si on a un objet book on est sur la page d'édition
         //sinon on est sur la page de création
+
+        //si un livre est passé, mode édition, vérifie que l'utilisateur
+        //est le créateur du livre
         if ($book) {
             //ici on ne demande ni un rôle ni un une information de connection
             //on vérifie book.is_creator
@@ -72,39 +84,43 @@ final class BookController extends AbstractController
             //Symfony a besoin d'un voter pour cela
             $this->denyAccessUnlessGranted('book.is_creator', $book);
         }
-
+        // Initialise un nouveau livre si null (mode création)
         $book ??= new Book();
+        //crée le formulaire associé au livre
         $form = $this->createForm(BookType::class, $book);
-
+        //traite la soumission du formulaire
         $form->handleRequest($request);
-
+        //vérifie si le formulaire a été soumis et est valide
         if ($form->isSubmitted() && $form->isValid()) {
-            //on répuère le user
+            //on récupère le user courant
             $user = $this->getUser();
+            //SI NOUVEAU LIVRE(pas d'id')ET UTILSATEUR VALIDE
             //le livre n'a pas d'id, cela veut dire qu'il n'est pas encore enregistré dabs la BDD
             //on est donc un nouvel objet book
             //et si mon utilisateur est une instance de User
             if (!$book->getId() && $user instanceof User) {
                 //alors on associe le User à l'objet book
+                //ASSOCIE L'UTIILISATEUR COMME CREATEUR DU LIVRE
                 $book->setCreatedBy($user);
             }
 
-
+            //persiste et enregistre le livre en BDD
             $book = $form->getData();
             $manager->persist($book);
             $manager->flush();
-
+            //redirige cer la liste des livres
             return $this->redirectToRoute('app_admin_book_index');
         }
-
+        //affiche le formulaire de création ou d'édition
         return $this->render('admin/book/new.html.twig', [
             'form' => $form,
         ]);
     }
-    //voir les détails d'un livre
+    //affiche les détails d'un livre spécifique
     #[Route('/{id}', name: 'app_admin_book_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(?Book $book): Response
     {
+        //rend la vue avec les détails du livre
         return $this->render('admin/book/show.html.twig', [
             'book' => $book,
         ]);
