@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 //importer les classes nécessaires
 use App\Entity\Book;
+use App\Entity\User;
 use App\Enum\BookStatusEnum;
 use App\Repository\BookRepository;
 use App\Entity\Author;
@@ -42,11 +43,12 @@ final class BookController extends AbstractController
     }
 
 
-    //méthode pour créer un livre
+    //méthode pour créer un livre ou éditer un livre
     //l'utilisateur doit avoir ce rôle pour accéder à cette méthode
     #[IsGranted('ROLE_AJOUT_DE_LIVRE')]
     #[Route('/new', name: 'app_admin_book_new', methods: ['GET', 'POST'])]
-    public function create(Request $request, EntityManagerInterface $manager): Response
+    #[Route('/{id}/edit', name: 'app_admin_book_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function create(?Book $book, Request $request, EntityManagerInterface $manager): Response
     {
 
         //on crée une instance du formulaire en utilisant la méthode createForm() de l'objet $this
@@ -59,12 +61,35 @@ final class BookController extends AbstractController
         //on utilise la méthode flush() de l'objet $manager pour enregistrer l'entité en base de données
         //on redirige l'utilisateur vers la liste des livres avec la méthode redirectToRoute() de l'objet $this
         //si le formulaire n'a pas été soumis ou que les données ne sont pas valides, on affiche le formulaire avec la méthode render() de l'objet $this
-        $book = new Book();
+
+        //si on a un objet book on est sur la page d'édition
+        //sinon on est sur la page de création
+        if ($book) {
+            //ici on ne demande ni un rôle ni un une information de connection
+            //on vérifie book.is_creator
+            //autrement dit on pose la question : est-ce que l'utilisateur
+            //qui a créé le livre est celui connecté ?
+            //Symfony a besoin d'un voter pour cela
+            $this->denyAccessUnlessGranted('book.is_creator', $book);
+        }
+
+        $book ??= new Book();
         $form = $this->createForm(BookType::class, $book);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //on répuère le user
+            $user = $this->getUser();
+            //le livre n'a pas d'id, cela veut dire qu'il n'est pas encore enregistré dabs la BDD
+            //on est donc un nouvel objet book
+            //et si mon utilisateur est une instance de User
+            if (!$book->getId() && $user instanceof User) {
+                //alors on associe le User à l'objet book
+                $book->setCreatedBy($user);
+            }
+
+
             $book = $form->getData();
             $manager->persist($book);
             $manager->flush();

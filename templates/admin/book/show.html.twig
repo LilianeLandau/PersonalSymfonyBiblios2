@@ -59,6 +59,9 @@
 					</div>
 
 					<a href="{{ path('app_admin_book_index') }}" class="btn btn-primary">Retour à la liste des livres</a>
+
+					<a href="{{ path('app_admin_book_edit', {id: book.id}) }}" class="btn btn-warning">Editer</a>
+
 				</section>
 
 			{% endblock %}
