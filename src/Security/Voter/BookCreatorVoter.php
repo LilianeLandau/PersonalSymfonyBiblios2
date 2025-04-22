@@ -38,7 +38,7 @@ class BookCreatorVoter extends Voter
 
     //cette annotation PHPDoc sert à indiquer explicitment
     //que la méthode hérite de la documentation de la classe parente
-    //en effet, classe BookCeratorVoter étend la classe Voter de SYmfony
+    //en effet, classe BookCeratorVoter étend la classe Voter de Symfony
     //l'annotation @inheritDoc permet de dire que cette méthode supports()
     //est identique à la méthode de la classe parente Voter::supports()
 

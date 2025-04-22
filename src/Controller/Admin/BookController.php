@@ -95,7 +95,7 @@ final class BookController extends AbstractController
             //on récupère le user courant
             $user = $this->getUser();
             //SI NOUVEAU LIVRE(pas d'id')ET UTILSATEUR VALIDE
-            //le livre n'a pas d'id, cela veut dire qu'il n'est pas encore enregistré dabs la BDD
+            //le livre n'a pas d'id, cela veut dire qu'il n'est pas encore enregistré dans la BDD
             //on est donc un nouvel objet book
             //et si mon utilisateur est une instance de User
             if (!$book->getId() && $user instanceof User) {

@@ -20,6 +20,9 @@
 					{{ user.email }}</p>
 				<p>Rôle:{{ user.roles|join(', ') }}
 				</p>
+				<p>Dernière connexion :
+					{{ user.lastConnectedAt ? user.lastConnectedAt|date('d/m/Y') : 'Jamais connecté' }}
+				</p>
 			</div>
 
 		{% endfor %}
